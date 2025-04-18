@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "missing_credentials": "Veuillez entrer un nom d'utilisateur et un mot de passe.",
+    "invalid_login": "Nom d'utilisateur ou mot de passe incorrect.",
+    "session_expired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "server_error": "Erreur de serveur, veuillez réessayer plus tard."
+  },
+  "api": {
+    "network_error": "Impossible de se connecter au serveur. Vérifiez votre connexion Internet.",
+    "timeout": "La requête a expiré. Veuillez réessayer.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action."
+  },
+  "work_orders": {
+    "missing_fields": "Veuillez remplir tous les champs obligatoires.",
+    "not_found": "Aucun Work Order trouvé.",
+    "fetch_error": "Impossible de récupérer les Work Orders. Veuillez réessayer.",
+    "creation_failed": "Échec de la création du Work Order. Veuillez réessayer plus tard.",
+    "server_error": "Erreur serveur lors de la création du Work Order.",
+    "invalid_data": "Les données fournies sont incorrectes. Vérifiez les champs et réessayez.",
+    "duplicate_entry": "Ce numéro de Work Order existe déjà.",
+    "unauthorized": "Vous n'avez pas les autorisations pour créer un Work Order."
+  }
+}
