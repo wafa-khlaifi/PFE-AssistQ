@@ -71,7 +71,6 @@ export const fetchWpmaterialByWorkOrderId = async (workorderid, sessionCookie) =
       data: materials,
     };
   } catch (error) {
-    console.error("Erreur dans fetchWpmaterialByWorkOrderId :", error);
     return {
       success: false,
       error: error.message,

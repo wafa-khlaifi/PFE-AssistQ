@@ -11,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import Header from '../components/Header';
 import WorkOrderCard from '../components/WorkOrderCard';
 import StatusPicker from '../components/StatusPicker';
 // On importe le hook
@@ -33,17 +33,18 @@ const WorkOrdersScreen = ({ navigation }) => {
     loadWorkOrders,
     setModalVisible,
     page,
+    
   } = useWorkOrdersViewModel(navigation);
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Work Orders</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+  <Header
+        title="Work Orders"
+        rightComponent={
           <Ionicons name="log-out-outline" size={28} color="#007BFF" />
-        </TouchableOpacity>
-      </View>
+        }
+        onPressRight={handleLogout}
+      />
 
       {/* Barre de recherche */}
       <View style={styles.searchCard}>
@@ -108,7 +109,7 @@ const WorkOrdersScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: '#fff' },
+  container: { flex: 1, padding: 10, backgroundColor: '#F8F9F8' },
   header: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -128,14 +129,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 25,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    paddingHorizontal: 15,
-    marginVertical: 10,
+    borderRadius: 35,
+    elevation: 30,
+   // shadowColor: '#000',
+   // shadowOffset: { width: 0, height: 2 },
+    //shadowOpacity: 0.1,
+    //shadowRadius: 5,
+   // paddingHorizontal: 1,
+   // marginVertical: 10,
   },
   searchInput: {
     flex: 1,

@@ -15,6 +15,8 @@ export const useWorkOrdersViewModel = (navigation) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isScannerVisible, setScannerVisible] = useState(false); // Contrôler la visibilité du scanner
+
 
   // --- Au montage, on charge la première page ---
   useEffect(() => {
@@ -65,7 +67,6 @@ export const useWorkOrdersViewModel = (navigation) => {
     }
     setLoading(false);
   };
-
   // --- Sélection d’un Work Order pour changer son statut ---
   const handleStatusPress = (workOrder) => {
     setSelectedWorkOrder(workOrder);
@@ -118,5 +119,6 @@ export const useWorkOrdersViewModel = (navigation) => {
     updateStatus,
     handleLogout,
     setModalVisible,
+  
   };
 };

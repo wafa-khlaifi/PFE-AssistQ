@@ -20,7 +20,7 @@ import { getApiBase } from './apiConfig';
         const apiBase = await getApiBase();
 
         // 🔹 Construire l'URL de l'API avec `workorderid` au lieu de `id`
-        const url = `${apiBase}?oslc.where=woclass="WORKORDER"&oslc.select=workorderid,wonum,description,status,status_description,location,siteid,schedstart,schedfinish,calcpriority,worktype,reportedby,owner,actstart,actfinish,estdur,actlabhrs,actlabcost,plustmptype,assetnum,glaccount,woclass,wogroup,supervisor,workorderid&oslc.pageSize=20&pageno=${pageNumber}&lean=1`;
+        const url = `${apiBase}?oslc.where=woclass="WORKORDER"&oslc.select=workorderid,wonum,description,status,status_description,location,siteid,calcpriority,worktype,failurecode,problemcode,reportedby,assetnum,workorderid&oslc.pageSize=20&pageno=${pageNumber}&lean=1`;
 
         console.log("📡 Envoi de la requête GET vers :", url);
 
@@ -55,7 +55,6 @@ import { getApiBase } from './apiConfig';
         return { success: true, workOrders: newWorkOrders, hasMore: newWorkOrders.length > 0 };
 
     } catch (error) {
-        console.error("❌ Erreur lors du chargement des Work Orders:", error);
         return { success: false, error: error.message };
     }
 };
@@ -88,7 +87,7 @@ export const fetchWorkOrderByWonum = async (wonum) => {
       const apiBase = await getApiBase();
 
       // 🔹 Construire l'URL de l'API
-      const url = `${apiBase}?oslc.where=${encodedFilter}&oslc.select=workorderid,wonum,description,status,status_description,location,siteid,schedstart,schedfinish,calpriority,worktype,reportedby,owner,actstart,actfinish,estdur,actlabhrs,actlabcost,plustmptype,assetnum,glaccount,woclass,wogroup,supervisor,workorderid&lean=1`;
+      const url = `${apiBase}?oslc.where=${encodedFilter}&oslc.select=workorderid,wonum,description,status,status_description,location,siteid,schedstart,schedfinish,calpriority,failurecode, problemcode,worktype,reportedby,owner,actstart,actfinish,estdur,actlabhrs,actlabcost,plustmptype,assetnum,glaccount,woclass,wogroup,supervisor,workorderid&lean=1`;
       console.log("📡 URL de la requête:", url);
   
       const response = await fetch(url, {
@@ -209,3 +208,84 @@ export const fetchWorkOrderByWonum = async (wonum) => {
         }
     }
 };
+
+
+
+
+
+
+
+/**
+ * Récupère l’objet WorkOrder (member[0]) depuis Maximo via OSLC.
+ *
+ * @param {number|string} workorderId   – L’ID du WorkOrder.
+ * @param {string}       sessionCookies – La chaîne de cookies de session Maximo (ex. "JSESSIONID=…; other=…").
+ * @returns {Promise<Object>}           – L’objet JS du WorkOrder.
+ */
+export async function fetchWorkOrderObject(workorderId, sessionCookies) {
+    // 1) Construction de l’URL
+    const apiBase = await getApiBase();  
+    // ex. 'http://maxgps.smartech-tn.com:9876/maximo/oslc/os/mxwo'
+    const url = `${apiBase}`
+      + `?oslc.select=failurecode,problemcode,wopriority,asset{installdate,assetnum,status,assettype}`
+      + `&lean=1`
+      + `&oslc.where=workorderid=${workorderId}`;
+  
+    // 2) Appel GET
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Cookie': sessionCookies
+      },
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error(`Maximo API Error ${response.status} – ${response.statusText}`);
+    }
+  
+    // 3) Transformation en JS object
+    const data = await response.json();
+  
+    // 4) Extraction du premier membre
+    return Array.isArray(data.member)
+      ? data.member[0]
+      : data;
+  }
+  
+  /**
+   * Transforme un WorkOrder JS en
+   * le payload attendu par le modèle IA,
+   * avec fréquence de panne par défaut à 2.
+   *
+   * @param {Object} workorderObj – L’objet JS retourné par fetchWorkOrderObject.
+   * @returns {Object}            – Le JSON au format IA.
+   */
+  export function buildModelInput(workorderObj) {
+    // 1) Récupère l’asset lié
+    const asset = Array.isArray(workorderObj.asset)
+      ? workorderObj.asset[0]
+      : workorderObj.asset;
+  
+    // 2) Calcul de l’âge de l’équipement en années
+    const installDate = new Date(asset.installdate);
+    const now = new Date();
+    let age = now.getFullYear() - installDate.getFullYear();
+    if (
+      now.getMonth()  < installDate.getMonth() ||
+      (now.getMonth() === installDate.getMonth() && now.getDate() < installDate.getDate())
+    ) {
+      age--;
+    }
+  
+    // 3) Construction du payload final, fréquence par défaut = 2
+    return {
+      ASSETTYPE:       asset.assettype,
+      FAILURECODE:     workorderObj.failurecode,
+      PROBLEMCODE:     workorderObj.problemcode,
+      FREQUENCE_PANNE: 2,
+      AGE_EQUIPMENT:   age,
+      PRIORITY:        String(workorderObj.wopriority)
+    };
+  }
+  

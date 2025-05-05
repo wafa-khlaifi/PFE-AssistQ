@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert,Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Header from '../components/Header';
@@ -74,8 +74,19 @@ const WorkorderSubScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Header title="Work Order Details" navigation={navigation} />
-
+      <Header
+  title="Work Order Details"
+  navigation={navigation}
+  rightComponent={
+    <Image
+      source={require('../constants/ai-assistant.png')}
+      style={{ width: 28, height: 28 }}
+      resizeMode="contain"
+    />
+    }
+       onPressRight={() => navigation.navigate('TechnicianIntelligentScreen',{
+              workorderid: currentWorkOrder.workorderid})}
+/>
       <WorkOrderCard
         workOrder={currentWorkOrder}
         onPress={() => console.log('Card pressed')}
@@ -123,8 +134,8 @@ const WorkorderSubScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: { 
     flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingBottom: 20,
+    backgroundColor: '#F8F9F8',
+    paddingBottom: 10,
     padding:10,
   },
   row: {

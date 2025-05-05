@@ -1,8 +1,8 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';  // ← Ajouté
 import 'react-native-gesture-handler';
 import React from 'react';
-import ErrorBoundary from './components/ErrorBoundary';  // Import du composant ErrorBoundary
-
+import ErrorBoundary from 'react-native-error-boundary';
+import {LogBox} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider } from './context/AuthContext';
@@ -22,6 +22,14 @@ import AddWorkLogScreen from './view/AddWorkLogScreen';
 import AddWplaborScreen from './view/AddWplaborScreen';
 import AddMaterialScreen from './view/AddMaterialScreen';
 import AddLabTransScreen from './view/AddLabTransScreen';
+import TechnicianIntelligentScreen from './view/TechnicianIntelligentScreen';
+import CorrectiveActionsScreen from './view/CorrectiveActionsScreen';
+LogBox.ignoreLogs([
+  'Erreur API',
+  'errorboundry',
+  'Text strings must be rendered within a <Text> component',         // nouveau filtre
+
+]);
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -47,6 +55,8 @@ const App = () => {
         <Stack.Screen name="AddWplaborScreen"  component={AddWplaborScreen}  options={{ headerShown: false  }}/>
         <Stack.Screen name="AddMaterialScreen"  component={AddMaterialScreen}  options={{ headerShown: false  }}/>
         <Stack.Screen name="AddLabTransScreen"  component={AddLabTransScreen}  options={{ headerShown: false  }}/>
+        <Stack.Screen name="TechnicianIntelligentScreen"  component={TechnicianIntelligentScreen}  options={{ headerShown: false  }}/>
+        <Stack.Screen name="CorrectiveActionsScreen"  component={CorrectiveActionsScreen}  options={{ headerShown: false  }}/>
 
       </Stack.Navigator>
     </NavigationContainer>

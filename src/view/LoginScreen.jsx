@@ -1,12 +1,11 @@
 // screens/LoginScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, StyleSheet, ImageBackground, Modal, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect ,LogBox } from 'react';
+import { View, Text, Alert, StyleSheet, Modal, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { loginUser } from '../services/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
-import InputField from '../components/InputField';
-import ScreenContainer from '../components/ScreenContainer';
+import Icon from 'react-native-vector-icons/Feather'; // Importation de la bibliothèque d'icônes
 
 const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ const LoginScreen = ({ navigation }) => {
     const loadBaseUrl = async () => {
       const storedBaseUrl = await AsyncStorage.getItem('baseUrl');
       if (storedBaseUrl) {
-         setNewBaseUrl(storedBaseUrl);
+        setNewBaseUrl(storedBaseUrl);
       }
     };
     loadBaseUrl();
@@ -66,16 +65,43 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground 
-      source={{ uri: 'https://source.unsplash.com/1600x900/?technology,abstract' }} 
-      style={styles.background}
-    >
+    <View style={styles.background}>
       <View style={styles.overlay}>
-        <ScreenContainer>
-          <Text style={styles.title}>Connexion</Text>
-          <InputField placeholder="Nom d'utilisateur" value={username} onChangeText={setUsername} />
-          <InputField placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry />
-          <Button title="Se connecter" onPress={handleLogin} loading={loading} disabled={loading} />
+        {/* Ajout du logo en haut de l'écran */}
+        <Image 
+          source={require('../constants/logoAssistQ.jpg')}  // Remplacez le chemin par l'emplacement de votre image
+          style={styles.logo}
+        />
+
+        {/* Carte contenant les champs de connexion */}
+        <View style={styles.card}>
+
+          {/* Champ Username / Email avec icône */}
+          <View style={styles.inputContainer}>
+            <Icon name="user" size={20} color="#888" style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#888"
+              value={username}
+              onChangeText={setUsername}
+            />
+          </View>
+
+          {/* Champ Password avec icône */}
+          <View style={styles.inputContainer}>
+            <Icon name="lock" size={20} color="#888" style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#888"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+
+          <Button title="Login" onPress={handleLogin} loading={loading} disabled={loading} />
 
           <TouchableOpacity
             style={styles.changeUrlButton}
@@ -84,11 +110,11 @@ const LoginScreen = ({ navigation }) => {
               setShowUrlModal(true);
             }}
           >
-            <Text style={styles.changeUrlButtonText}>Changer l'environnement</Text>
+            <Text style={styles.changeUrlButtonText}>Change Environment</Text>
           </TouchableOpacity>
-        </ScreenContainer>
+        </View>
       </View>
-      
+
       {/* Modal de configuration de l'URL de base */}
       <Modal
         visible={showUrlModal}
@@ -98,19 +124,19 @@ const LoginScreen = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Configuration de l'URL de base</Text>
+            <Text style={styles.modalTitle}>Base URL Configuration</Text>
             <TextInput
               style={styles.input}
-              placeholder="Entrez l'URL de base"
+              placeholder="Enter Base URL"
               value={newBaseUrl}
               onChangeText={setNewBaseUrl}
             />
-            <Button title="Sauvegarder" onPress={handleSaveBaseUrl} />
-            <Button title="Annuler" onPress={() => setShowUrlModal(false)} />
+            <Button title="Save" onPress={handleSaveBaseUrl} />
+            <Button title="Cancel" onPress={() => setShowUrlModal(false)} />
           </View>
         </View>
       </Modal>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -118,58 +144,90 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     width: '100%',
-    height: '100%'
+    height: '100%',
+    backgroundColor: '#FFFF', // Fond blanc simple
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 200,  // Ajustez la taille du logo selon vos préférences
+    height: 200,  // Ajustez la taille du logo selon vos préférences
+    marginBottom: 30, // Espacement entre le logo et le titre
+  },
+  card: {
+    width: '90%',
+    padding: 20,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 10,
+    elevation: 5, // Ombre légère pour la carte
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#007BFF',
-    marginBottom: 20
+    color: '#000000', // Texte noir
+    marginBottom: 30,
+    textAlign: 'center',
   },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    width: '100%',
+    padding: 15,
+    fontSize: 16,
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 0,
+    borderRadius: 25,
+  },
+
   changeUrlButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     marginTop: 20,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   changeUrlButtonText: {
-    color: '#000000',           // Texte en noir
+    color: '#000000', // Texte noir
     fontWeight: 'bold',
     fontSize: 16,
-    textDecorationLine: 'underline'  // Texte souligné
+    textDecorationLine: 'underline',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)'
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
     width: '80%',
     backgroundColor: '#FFF',
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 10,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 5,
-    width: '100%',
-    padding: 10,
-    marginBottom: 10
-  }
 });
 
 export default LoginScreen;
